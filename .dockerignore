@@ -1,0 +1,8 @@
+.git
+.github
+.idea
+.DS_Store
+.env
+*.yml
+README.md
+LICENSE

@@ -1,0 +1,5 @@
+.DS_Store
+.idea/
+.env
+# Local deployment (not part of the public repo)
+docker-compose.yml

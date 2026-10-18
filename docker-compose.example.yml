@@ -1,0 +1,38 @@
+# Example: three ephemeral org-level runners. Put the PAT in a .env file next
+# to this file (GH_RUNNER_PAT=...), never commit it.
+x-runner: &runner
+  image: rhuruphansen/php-github-runner:8.4
+  restart: always
+  pull_policy: always
+  stop_grace_period: 30s # time to unregister on shutdown
+  environment: &runner-env
+    REPO: my-org # or owner/repo for a repo-level runner
+    ACCESS_TOKEN: ${GH_RUNNER_PAT:?set GH_RUNNER_PAT in .env}
+    LABELS: laravel
+  networks: [runners]
+
+services:
+  runner_1:
+    <<: *runner
+    environment: { <<: *runner-env, NAME: runner_1 }
+  runner_2:
+    <<: *runner
+    environment: { <<: *runner-env, NAME: runner_2 }
+  runner_3:
+    <<: *runner
+    environment: { <<: *runner-env, NAME: runner_3 }
+
+  # Services for tests, reachable from jobs as mysql:3306 and mailpit:1025.
+  # Not published on the host.
+  mysql:
+    image: mysql:8.4
+    environment:
+      MYSQL_ROOT_PASSWORD: ${TEST_DB_PASSWORD:?set TEST_DB_PASSWORD in .env}
+      MYSQL_DATABASE: test
+    networks: [runners]
+  mailpit:
+    image: axllent/mailpit:v1.27
+    networks: [runners]
+
+networks:
+  runners:
