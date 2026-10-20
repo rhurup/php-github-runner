@@ -105,3 +105,15 @@ jobs:
           short-description: "Ephemeral self-hosted GitHub Actions runner with PHP 8.3-8.5, Composer and Node."
           readme-filepath: ./README.md
           enable-url-completion: true
+
+      # github-runner is the image's old name. It still gets the same tags for
+      # now, but point anyone landing there to the new name.
+      - name: Mark old Docker Hub repository as renamed
+        if: env.DOCKERHUB_USERNAME != ''
+        uses: peter-evans/dockerhub-description@v4
+        with:
+          username: ${{ secrets.DOCKERHUB_USERNAME }}
+          password: ${{ secrets.DOCKERHUB_TOKEN }}
+          repository: ${{ secrets.DOCKERHUB_USERNAME }}/github-runner
+          short-description: "Renamed to rhuruphansen/php-github-runner. Switch to the new name; this one will be removed."
+          readme-filepath: ./.github/dockerhub-moved.md
