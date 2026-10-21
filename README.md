@@ -5,7 +5,7 @@ Self-hosted GitHub Actions runner for PHP and Laravel CI. It's built on Ubuntu 2
 - **Ephemeral by default.** Each runner takes one job and then exits. The container restarts with a clean home directory and a fresh copy of the runner, so nothing a job leaves behind reaches the next job.
 - **Your GitHub token stays out of jobs.** The PAT used for registration is only held by a root process. The runner and every job run as an unprivileged user, and that user can't see the token.
 - **Org-level or repo-level** runners, with optional labels and runner group. A `php-<version>` label is always added.
-- **Rebuilt weekly** with the latest runner release and OS/PHP security updates. Published for `linux/amd64` and `linux/arm64`.
+- **Rebuilt daily** with the latest runner release and OS/PHP security updates. A build fails rather than publish a PHP older than the latest security release. Published for `linux/amd64` and `linux/arm64`.
 
 ## Usage
 
@@ -33,7 +33,7 @@ The images are published to Docker Hub as `rhuruphansen/php-github-runner` and t
 
 | Tag | |
 |---|---|
-| `8.3`, `8.4`, `8.5` | Latest weekly build of that PHP version |
+| `8.3`, `8.4`, `8.5` | Latest daily build of that PHP version |
 | `8.4-20261019` | Fixed build (date-stamped) |
 | `latest` | Same as `8.4` |
 
