@@ -31,10 +31,20 @@ ENV PHP_VERSION=${PHP_VERSION} \
 
 SHELL ["/bin/bash", "-o", "pipefail", "-c"]
 
-RUN apt-get update \
+# CI passes the date here so the apt layer is rebuilt (and picks up security
+# updates) at least daily instead of being served from the build cache.
+ARG APT_CACHE_BUST=""
+# CI passes the lowest PHP patch release with all known security fixes; the
+# build fails rather than publishing an image with an older, vulnerable PHP.
+ARG PHP_MIN_VERSION=""
+
+# Retry flaky mirrors, and fail instead of silently skipping the PHP packages
+# when the PPA index can't be fetched.
+RUN echo 'Acquire::Retries "5";' > /etc/apt/apt.conf.d/80-retries \
+ && apt-get update --error-on=any \
  && apt-get install -y --no-install-recommends ca-certificates curl gnupg software-properties-common \
- && add-apt-repository -y ppa:ondrej/php \
- && apt-get update \
+ && add-apt-repository -y -n ppa:ondrej/php \
+ && apt-get update --error-on=any \
  && apt-get upgrade -y \
  && pkgs=() \
  && for ext in ${PHP_EXTENSIONS}; do \
@@ -48,6 +58,12 @@ RUN apt-get update \
  && apt-get purge -y software-properties-common \
  && apt-get autoremove -y \
  && rm -rf /var/lib/apt/lists/*
+
+RUN command -v php >/dev/null || { echo "ERROR: PHP was not installed"; exit 1; } \
+ && echo "PHP $(php -r 'echo PHP_VERSION;')" \
+ && if [ -n "${PHP_MIN_VERSION}" ] && ! php -r 'exit(version_compare(PHP_VERSION, getenv("PHP_MIN_VERSION"), ">=") ? 0 : 1);'; then \
+      echo "ERROR: PHP $(php -r 'echo PHP_VERSION;') is older than ${PHP_MIN_VERSION} (missing security fixes)"; exit 1; \
+    fi
 
 COPY --from=composer /usr/bin/composer /usr/local/bin/composer
 COPY --from=node /usr/local/bin/node /usr/local/bin/node
