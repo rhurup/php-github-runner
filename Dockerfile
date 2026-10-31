@@ -16,7 +16,7 @@ ARG RUNNER_VERSION=2.338.0
 ARG PHP_VERSION=8.4
 # Extensions without the "php<version>-" prefix. Packages that don't exist for
 # the chosen PHP version (e.g. opcache, which is built in from 8.5) are skipped.
-ARG PHP_EXTENSIONS="bcmath cli curl dev gd imagick intl mbstring mcrypt mongodb mysql opcache pcov readline redis soap sqlite3 uuid xml xsl yaml zip"
+ARG PHP_EXTENSIONS="bcmath cli curl dev gd imagick intl mbstring mcrypt mongodb mysql opcache pcov pgsql readline redis soap sqlite3 uuid xml xsl yaml zip"
 ARG RUNNER_UID=1001
 ARG TARGETARCH
 ARG DEBIAN_FRONTEND=noninteractive
