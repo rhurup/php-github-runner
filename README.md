@@ -73,6 +73,7 @@ Use a fine-grained token limited to what's needed, or a dedicated machine user. 
 - **Playwright:** the system libraries are installed, but the browsers aren't, because they must match your project's Playwright version. Run `npx playwright install chromium` in the job. In ephemeral mode, cache `~/.cache/ms-playwright` with `actions/cache`.
 - **Composer and npm caches** are cleared between jobs in ephemeral mode. Use `actions/cache` or `actions/setup-node` caching.
 - **pcov** is enabled for code coverage.
+- **npm 12** blocks dependency install scripts and git or tarball-URL dependencies by default. A package that needs a build step at install, such as a native module, won't get one until you run `npm install-scripts approve` and commit the policy, or use a different `NPM_VERSION`.
 
 ## Build your own
 
@@ -80,7 +81,7 @@ Use a fine-grained token limited to what's needed, or a dedicated machine user. 
 docker build --build-arg PHP_VERSION=8.5 -t php-github-runner:8.5 .
 ```
 
-Build args: `PHP_VERSION`, `PHP_EXTENSIONS`, `RUNNER_VERSION`, `NODE_VERSION` (default 24), `RUNNER_UID` (default 1001).
+Build args: `PHP_VERSION`, `PHP_EXTENSIONS`, `RUNNER_VERSION`, `NODE_VERSION` (default 26), `NPM_VERSION` (default 12), `RUNNER_UID` (default 1001).
 
 ## License
 
