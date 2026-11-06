@@ -79,6 +79,9 @@ RUN --mount=type=tmpfs,target=/root/.npm \
 
 # The runner is installed root-owned in /opt and copied fresh into the
 # runner's home on every start, so a job can't tamper with it for later jobs.
+# The runner only uses its bundled node to run JavaScript actions. The npm and
+# corepack bundled next to it are never called, and their outdated
+# dependencies are what vulnerability scanners flag, so they're removed.
 RUN case "${TARGETARCH}" in \
       amd64) arch=x64 ;; \
       arm64) arch=arm64 ;; \
@@ -89,6 +92,11 @@ RUN case "${TARGETARCH}" in \
     | tar xz --no-same-owner -C /opt/actions-runner \
  && chown -R root:root /opt/actions-runner \
  && /opt/actions-runner/bin/installdependencies.sh \
+ && rm -rf /opt/actions-runner/externals/node*/lib/node_modules/npm \
+           /opt/actions-runner/externals/node*/lib/node_modules/corepack \
+           /opt/actions-runner/externals/node*/bin/npm \
+           /opt/actions-runner/externals/node*/bin/npx \
+           /opt/actions-runner/externals/node*/bin/corepack \
  && rm -rf /var/lib/apt/lists/*
 
 # System libraries for Playwright's Chromium. Browsers themselves are version
